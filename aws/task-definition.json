@@ -1,0 +1,36 @@
+{
+    "family": "tradingview-api",
+    "containerDefinitions": [
+        {
+            "name": "tradingview-api",
+            "image": "${ECR_REPOSITORY_URI}:latest",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "REDIS_HOST",
+                    "value": "${REDIS_ENDPOINT}"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/tradingview-api",
+                    "awslogs-region": "${AWS_REGION}",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": ["FARGATE"],
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512"
+}

@@ -1,0 +1,10 @@
+{
+  "aws:elasticbeanstalk:container:nodejs": {
+    "NodeCommand": "npm start",
+    "ProxyServer": "nginx"
+  },
+  "aws:elasticbeanstalk:application:environment": {
+    "NODE_ENV": "production",
+    "PORT": "8081"
+  }
+}
