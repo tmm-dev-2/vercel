@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "next lint",
     "dev:full": "concurrently \"python bridge.py\" \"next dev\"",
     "collect": "tsx scripts/start-collection.ts",

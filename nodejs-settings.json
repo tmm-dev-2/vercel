@@ -6,5 +6,13 @@
   "aws:elasticbeanstalk:application:environment": {
     "NODE_ENV": "production",
     "PORT": "8081"
+  },
+  "aws:elasticbeanstalk:command": {
+    "Timeout": "1800"
+  },
+  "aws:autoscaling:updatepolicy:rollingupdate": {
+    "RollingUpdateEnabled": true,
+    "MaxBatchSize": 1,
+    "MinInstancesInService": 0
   }
 }

@@ -8,9 +8,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+const { Separator: DropdownMenuSeparator } = DropdownMenuPrimitive
 import { Button } from 'dashboard/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from 'dashboard/components/ui/card';
