@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react'
 
 export function WatchlistPanel() {
-  const [watchlist, setWatchlist] = useState([])
+  interface StockData {
+    symbol: string
+    change: number
+    changePercent: number
+    price: number
+    companyName: string
+  }
+
+  const [watchlist, setWatchlist] = useState<StockData[]>([])
   const defaultSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META']
 
   useEffect(() => {

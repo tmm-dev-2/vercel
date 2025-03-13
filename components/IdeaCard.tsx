@@ -1,5 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
+import { ReactionBar } from './ReactionBar';
+import { CommentSection } from './CommentSection';
+
 
 export function IdeaCard({ idea }: { idea: TradingIdea }) {
   return (

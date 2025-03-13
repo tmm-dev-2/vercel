@@ -12,8 +12,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start -p ${PORT:-3000}",
     "lint": "next lint",
+    "deploy": "next build && firebase deploy --only hosting",
     "dev:full": "concurrently \"python bridge.py\" \"next dev\"",
     "collect": "tsx scripts/start-collection.ts",
     "start:ws": "NODE_OPTIONS=\"--loader ts-node/esm\" ts-node lib/websocket-api/server.ts",

@@ -17,6 +17,8 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from 'dashboard/components/ui/card';
 import { Input } from 'dashboard/components/ui/input';
 
+
+
 interface StockSuggestion {
   symbol: string;
   name: string;

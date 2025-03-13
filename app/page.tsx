@@ -2,33 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from "components/ui/button";
-import { MainChart, MainChartContainer } from "components/main-chart";
+import MainChart from "components/main-chart";
+import { MainChartContainer } from "components/main-chart";
 import { Sidebar } from "components/sidebar";
 import { DrawingTools } from "components/drawing-tools";
 import { TopPanel } from "components/top-panel";
 import { LeftSidePane } from "components/left-side-pane";
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 import LoginPage from 'components/auth/LoginPage';
 import { X } from 'lucide-react';
 import Technicals from "../components/Technicals";
 import { Resizable } from 're-resizable';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { TradingView } from '../components/tmm-chart'
+import { TradingView } from '../components/tmm-chart';
 import ActionsBar from "components/ActionsBar";
 import ProfilePage from '../components/ProfilePage';
 import { auth } from '../config/firebase';
 import { AIResults } from '../components/ai-results/ai-results';
 import { Workspace } from "components/space";
 
-
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? '',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? ''
 };
 
 const app = initializeApp(firebaseConfig);
@@ -37,7 +37,7 @@ const db = getFirestore(app);
 const ScriptEditor = dynamic(
   () => import('../components/ScriptEditor'),
   { ssr: false }
-)
+);
 
 interface Stock {
   symbol: string;
@@ -48,14 +48,42 @@ interface Stock {
   companyName: string;
   exchange: string;
   industry: string;
-  previousClose?: number;
-  open?: number;
-  dayLow?: number;
-  dayHigh?: number;
-  volume?: number;
-  marketCap?: number;
-  peRatio?: number;
-}
+  previousClose: number;  // Remove optional
+  open: number;          // Remove optional
+  dayLow: number;        // Remove optional
+  dayHigh: number;       // Remove optional
+  volume: number;        // Remove optional
+  marketCap: number;     // Remove optional
+  peRatio: number;       // Remove optional
+  avgVolume: number;
+  avgVolume10days: number;
+  high52Week: number;
+  low52Week: number;
+  beta: number;
+  eps: number;
+  dividendYield: number;
+  targetPrice: number;
+  analystRating: string;
+  sector: string;
+  marketStatus: string;
+  description: string;
+  website: string;
+  forwardPE: number;
+  forwardEps: number;
+  dividend: number;
+  priceToBook: number;
+  trailingPE: number;
+  priceToSales: number;
+  profitMargin: number;
+  revenueGrowth: number;
+  debtToEquity: number;
+  returnOnEquity: number;
+  returnOnAssets: number;
+  profitMargins: number;
+  operatingMargins: number
+  }
+  
+            
 
 interface CandleData {
   time: number;
@@ -76,8 +104,8 @@ interface User {
 }
 
 export default function Home() {
-  const [selectedPeriod, setSelectedPeriod] = useState('1d');
-  const [selectedStrategy, setSelectedStrategy] = useState('none');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('1d');
+  const [selectedStrategy, setSelectedStrategy] = useState<string>('none');
   const [candleData, setCandleData] = useState<CandleData[]>([]);
   const [currentStock, setCurrentStock] = useState<Stock>({
     symbol: 'BTCUSDT',
@@ -87,23 +115,68 @@ export default function Home() {
     lastUpdated: '',
     companyName: 'Bitcoin',
     exchange: 'BINANCE',
-    industry: 'Cryptocurrency'
+    industry: 'Cryptocurrency',
+    previousClose: 0,
+    open: 0,
+    dayLow: 0,
+    dayHigh: 0,
+    volume: 0,
+    marketCap: 0,
+    peRatio: 0,
+    avgVolume: 0,
+    avgVolume10days: 0,
+    high52Week: 0,
+    low52Week: 0,
+    beta: 0,
+    eps: 0,
+    dividendYield: 0,
+    targetPrice: 0,
+    analystRating: '',
+    sector: 'Cryptocurrency',
+    marketStatus: 'TRADING',
+    description: '',
+    website: '',
+    forwardPE: 0,
+    forwardEps: 0,
+    dividend: 0,
+    priceToBook: 0,
+    trailingPE: 0,
+    priceToSales: 0,
+    profitMargin: 0,
+    revenueGrowth: 0,
+    debtToEquity: 0,
+    returnOnEquity: 0,
+    returnOnAssets: 0,
+    profitMargins: 0,
+    operatingMargins: 0
   });
-  const [isLoginPageActive, setIsLoginPageActive] = useState(false);
+  
+  const [isLoginPageActive, setIsLoginPageActive] = useState<boolean>(false);
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
-  const [showTechnicalsOverlay, setShowTechnicalsOverlay] = useState(false);
+  const [showTechnicalsOverlay, setShowTechnicalsOverlay] = useState<boolean>(false);
   const [lastChartData, setLastChartData] = useState<{symbol: string, period: string} | null>(null);
-  const [selectedLayout, setSelectedLayout] = useState('single');
-  const [symbols, setSymbols] = useState(['BTCUSDT']);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState(null);
-  const [showAIResults, setShowAIResults] = useState(false);
+  const [selectedLayout, setSelectedLayout] = useState<string>('single');
+  const [symbols, setSymbols] = useState<string[]>(['BTCUSDT']);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [showAIResults, setShowAIResults] = useState<boolean>(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
         setIsAuthenticated(true);
-        setLoggedInUser(user);
+        const mappedUser: User = {
+          googleId: firebaseUser.uid,
+          imageUrl: firebaseUser.photoURL ?? '',
+          email: firebaseUser.email ?? '',
+          name: firebaseUser.displayName ?? '',
+          givenName: firebaseUser.displayName?.split(' ')[0] ?? '',
+          familyName: firebaseUser.displayName?.split(' ')[1] ?? ''
+        };
+        setLoggedInUser(mappedUser);
+      } else {
+        setIsAuthenticated(false);
+        setLoggedInUser(null);
       }
     });
   
@@ -114,7 +187,6 @@ export default function Home() {
     if (!symbol || symbol === 'undefined') return;
     
     try {
-      console.log(`Fetching data for ${symbol} with timeframe ${period}`);
       const response = await fetch(
         `http://localhost:5000/fetch_candles?symbol=${symbol}&timeframe=${period}`,
         {
@@ -131,31 +203,27 @@ export default function Home() {
 
       const rawData = await response.json();
       
-      if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
+      if (!Array.isArray(rawData) || rawData.length === 0) {
         throw new Error('No data received from server');
       }
 
-      console.log(`Received ${rawData.length} candles for ${period} timeframe`);
-      
       const formattedData = rawData
         .map((d: any) => {
-          if (!d.time || typeof d.time !== 'number' || isNaN(d.time)) {
-            console.error('Invalid time value:', d.time);
+          if (!d?.time || typeof d.time !== 'number' || isNaN(d.time)) {
             return null;
           }
 
           return {
             time: d.time,
-            open: Number(d.open),
-            high: Number(d.high),
-            low: Number(d.low),
-            close: Number(d.close),
-            volume: Number(d.volume)
+            open: Number(d.open) || 0,
+            high: Number(d.high) || 0,
+            low: Number(d.low) || 0,
+            close: Number(d.close) || 0,
+            volume: Number(d.volume) || 0
           };
         })
-        .filter((d: any) => d !== null);
+        .filter((d): d is CandleData => d !== null);
 
-      console.log(`Formatted ${formattedData.length} candles`);
       setCandleData(formattedData);
       
       if (formattedData.length > 0) {
@@ -204,12 +272,12 @@ export default function Home() {
         
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setSelectedPeriod(data.period);
+          setSelectedPeriod(data.period ?? '1d');
           setCurrentStock(prev => ({
             ...prev,
-            symbol: data.symbol
+            symbol: data.symbol ?? 'BTCUSDT'
           }));
-          await fetchData(data.symbol, data.period);
+          await fetchData(data.symbol ?? 'BTCUSDT', data.period ?? '1d');
         }
       }
     } catch (error) {
@@ -246,10 +314,16 @@ export default function Home() {
         body: JSON.stringify({ script }),
       });
 
+      if (!response.ok) {
+        throw new Error('Script execution failed');
+      }
+
       const result = await response.json();
       console.log('Script Result:', result);
+      return result;
     } catch (error) {
       console.error('Error running script:', error);
+      return null;
     }
   };
 
@@ -258,7 +332,8 @@ export default function Home() {
     setShowAIResults(false);
   };
 
-  const handleLogin = (user: any) => {
+  const handleLogin = (user: User) => {
+    if (!user) return;
     setLoggedInUser(user);
     setIsLoginPageActive(false);
   };
@@ -273,6 +348,8 @@ export default function Home() {
   };
 
   const handleLayoutChange = (layout: string) => {
+    if (!layout) return;
+    
     setSelectedLayout(layout);
     const symbolCount = {
       'single': 1,
@@ -282,7 +359,7 @@ export default function Home() {
       'quad': 4,
       'horizontal-3': 3,
       'vertical-3': 3
-    }[layout] || 1;
+    }[layout] ?? 1;
 
     const newSymbols = [...symbols];
     while (newSymbols.length < symbolCount) {
@@ -312,7 +389,11 @@ export default function Home() {
       
       <div className="flex flex-1 min-h-0">
         <div className="flex h-full">
-          <LeftSidePane onAccountClick={handleAccountClick} onChartClick={handleChartClick} />
+          <LeftSidePane 
+            onAccountClick={handleAccountClick} 
+            onChartClick={handleChartClick} 
+            
+          />
           <DrawingTools />
         </div>
         
@@ -348,7 +429,7 @@ export default function Home() {
             </Resizable>
             
             <div className="flex-1 min-h-[200px] overflow-hidden">
-            <Workspace />
+              <Workspace />
             </div>
           </div>
         )}
@@ -363,12 +444,11 @@ export default function Home() {
           <Sidebar 
             currentStock={currentStock} 
             onShowTechnicals={handleShowTechnicals}
-            analysisResults={analysisResults} 
           />
         </Resizable>
       </div>
 
-      {loggedInUser && (
+      {loggedInUser?.name && (
         <div className="absolute top-0 right-0 p-4 text-white">
           Logged in as: {loggedInUser.name}
         </div>
@@ -399,36 +479,36 @@ export default function Home() {
       ) : null}
 
       {showTechnicalsOverlay && (
-        <div className="fixed inset-0 z-50 flex">
-          <LeftSidePane 
-            className="w-10 flex-shrink-0 bg-[#252526]" 
-            onAccountClick={handleAccountClick} 
-            onChartClick={handleChartClick}
-          />
-          <div className="flex-1 bg-[#1E1E1E]">
-            <div className="flex justify-end p-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCloseTechnicals}
-                className="text-[#666] hover:text-white hover:bg-[#2a2e39]"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="p-6">
-              <Technicals 
-                 symbol={currentStock.symbol} 
-                 timeframe={selectedPeriod} 
-                 onClose={handleCloseTechnicals}
-               />
-             </div>
-           </div>
-         </div>
-       )}
- 
-       <ActionsBar />
-     </main>
-   );
- }
-                
+                <div className="fixed inset-0 z-50 flex">
+                <LeftSidePane 
+                  className="w-10 flex-shrink-0 bg-[#252526]" 
+                  onAccountClick={handleAccountClick} 
+                  onChartClick={handleChartClick}
+                />
+                <div className="flex-1 bg-[#1E1E1E]">
+                  <div className="flex justify-end p-4">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleCloseTechnicals}
+                      className="text-[#666] hover:text-white hover:bg-[#2a2e39]"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  <div className="p-6">
+                    <Technicals 
+                      symbol={currentStock.symbol} 
+                      timeframe={selectedPeriod} 
+                      onClose={handleCloseTechnicals}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+      
+            <ActionsBar />
+          </main>
+        );
+      }
+      
